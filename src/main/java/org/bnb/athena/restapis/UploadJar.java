@@ -5,23 +5,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.jar.JarEntry;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.apache.commons.io.FileUtils;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
@@ -94,6 +85,7 @@ public class UploadJar {
 		    }
 		    fos.close();
 		    is.close();
+		    jar.close();
 		}
 	}
 }
