@@ -1,15 +1,14 @@
-<html>
+<!DOCTYPE html>
 <head>
-<link rel="stylesheet" href="css/bootstrap-theme.min.css" />
-<link rel="stylesheet" href="css/athena-style.css" />
+<link href="css/bootstrap-theme.min.css" rel="stylesheet"/>
+<link href="css/athena-style.css" rel="stylesheet"/>
+<link href="css/bootstrap.min.css" rel="stylesheet"></script>
 <script type="text/javascript" src="js/angular.min.js"></script>
 <script type="text/javascript" src="js/angular-route.min.js"></script>
-<script type="text/javascript" src="css/bootstrap-min.css"></script>
 <script type="text/javascript" src="modules/AthenaApp.js"></script>
 </head>
 <body ng-app="AthenaApp">
 	<h2>Athena-Core</h2>
-	<div ng-view />
+	<div ng-view></div>
 </body>
-
 </html>
