@@ -5,6 +5,7 @@
 <link href="css/bootstrap.min.css" rel="stylesheet"></script>
 <script type="text/javascript" src="js/angular.min.js"></script>
 <script type="text/javascript" src="js/angular-route.min.js"></script>
+<script type="text/javascript" src="js/ng-file-upload.min.js"></script>
 <script type="text/javascript" src="modules/AthenaApp.js"></script>
 </head>
 <body ng-app="AthenaApp">

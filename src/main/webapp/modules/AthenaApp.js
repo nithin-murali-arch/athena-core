@@ -1,5 +1,5 @@
-var app = angular.module('AthenaApp', [ 'ngRoute' ]);
-
+"use strict";
+var app = angular.module('AthenaApp', [ 'ngRoute', 'ngFileUpload']);
 app.config([ '$routeProvider', function($routeProvider) {
 	$routeProvider.when('/login', {
 		templateUrl : 'modules/templates/login.html',
@@ -9,48 +9,67 @@ app.config([ '$routeProvider', function($routeProvider) {
 		controller : 'JarUpload'
 	}).otherwise({
 		redirectTo : '/login'
-	})
-} ]);
-
-app.factory('bnbObjHolder', function() {
-	var factory;
-	if (factory === undefined) {
-		factory = window.sessionStorage.getItem("factory");
-		if (factory === null) {
-			factory = {};
-		}
-	}
-
-	factory.setParam = function(key, value) {
-		factory[key] = value;
-	};
-
-	factory.getParam = function(key) {
-		return factory[key];
-	};
-	
-	factory.removeParam = function(key){
-		delete factory[key];
-	};
-	
-	factory.logout = function(){
-		removeParam('credentials');
-	};
-	
-	factory.persist = function(){
-		
-	};
-	return factory;
-});
-
-app.controller("LoginController", [ '$scope', 'bnbObjHolder', function($scope, bnbObjHolder) {
-	$scope.logout = function(){
-		bnbObjHolder.logout();
-	}
-	
-	$scope.test = "";
+	});
 }]);
 
-app.controller("JarUpload", [ '$scope', 'bnbObjectHolder', function($scope, bnbObjectHolder) {
+app.service('bnbHttpService', ['$http', '$q', function($http, $q){
+	this.call = function(config){
+		var deferred = $q.defer();
+		$http(config).then(function(response){
+			deferred.resolve(response);
+		});
+		return deferred.promise;
+	};
+}]);
 
+app.controller("LoginController", [ '$scope', 'bnbHttpService', '$location', function($scope, bnbHttpService, $location) {
+	var data;
+	$scope.login = {};
+	$scope.submitLogin = function(){
+		var loginConfig = {
+		method: "post",
+		headers: { 'Content-Type': 'application/json'},
+		dataType: 'json',
+		url: 'services/authenticate/login',
+		data: JSON.stringify($scope.login)
+	};
+		bnbHttpService.call(loginConfig).then(function(response){
+			data = response;
+			console.log(response);
+			if(response.data.loggedin){
+				$location.path("/upload");
+			}
+		});
+	};
+}]);
+
+app.controller("JarUpload", [ '$scope', 'bnbHttpService', function($scope, bnbHttpService) {
+	
+	$scope.upload = function(){
+		var input =  document.getElementById('file');
+	      var file = input.files[0];
+	      var fr = new FileReader();
+	      fr.onload = receivedText;
+	      fr.readAsBinaryString(file);
+		var uploadConfig = {
+				method: "post",
+				headers: { 'Content-Type': 'multipart/form-data'},
+				url: 'services/upload/jar',
+				data: {file: $scope.file}
+			};
+		if(angular.isDefined($scope.file)){
+			delete $scope.error;
+			var data;
+			bnbHttpService.call(uploadConfig).then(function(response){
+				data = response;
+				console.log(response);
+			});
+		}
+		else{
+			$scope.error = "No file chosen!";
+		}
+	}
+	function receivedText() {
+	    document.getElementById('editor').appendChild(document.createTextNode(fr.result));
+	  } 
 }]);

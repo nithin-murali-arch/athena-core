@@ -1,5 +1,5 @@
-      <form action="services/login" method="post">
-	<input type="text" name="username">
-<input type="text" name="password">
-	<input type="submit">
+<ng-form name="loginForm">
+	<input type="text" ng-model="login.username" name="username">
+	<input type="text" ng-model="login.password" name="password">
+	<button class="btn" ng-click="submitLogin()">
 </form>
