@@ -41,6 +41,11 @@ app.controller("LoginController", [ '$scope', 'bnbHttpService', '$location', fun
 			}
 		});
 	};
+	$scope.watchKeys = function($event){
+		if($event.keyCode === 13){
+			$scope.submitLogin();
+		}
+	}
 }]);
 
 app.controller("JarUpload", [ '$scope', 'bnbHttpService', function($scope, bnbHttpService) {

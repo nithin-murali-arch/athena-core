@@ -1,5 +1,5 @@
 <article style="background:  #272125; height:500px">
-<form action="">
+<div class="formClass">
  <div class="pd100" >
   		<h2>
   			<div style="color:white !important;"> Login</div>
@@ -8,8 +8,7 @@
  		 <span class="entypo-user inputUserIcon" style="color: white;"></span>
  		 <input type="text" class="user input"  ng-model="login.username" placeholder="username">
  		 <span class="entypo-key inputPassIcon" style="color: white;"></span>
-  		 <input type="password" class="pass input" ng-model="login.password" placeholder="password">
+  		 <input type="password" class="pass input" ng-model="login.password" ng-keypress="watchKeys($event)" placeholder="password">
   </div>
-</form>
+</div>
 </article>
-

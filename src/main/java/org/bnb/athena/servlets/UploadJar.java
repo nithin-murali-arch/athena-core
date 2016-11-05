@@ -18,6 +18,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import javax.ws.rs.core.Response;
 
@@ -49,7 +50,11 @@ public class UploadJar extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		HttpSession session = (HttpSession) request.getSession();
 		PrintWriter writer = response.getWriter();
+		if(session.getAttribute("userName") == null){
+			writer.println("Error: You must log in first!");
+		}
 		if (!ServletFileUpload.isMultipartContent(request)) {
             writer.println("Error: Form must have enctype=multipart/form-data.");
             writer.flush();
@@ -110,7 +115,7 @@ public class UploadJar extends HttpServlet {
 			System.out.println("JARUPLOAD ERROR");
 			e.printStackTrace();
 		}
-		getServletContext().getRequestDispatcher("/index.jsp#/upload").forward(request, response);
+		getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
 
 	}
 

@@ -26,7 +26,7 @@ loginForm.bg {
   
 }
 
-form {
+.formClass {
   position:relative;
   margin: 15px auto;
   width: 380px;
