@@ -1,4 +1,19 @@
+<article style="background:  #272125; height:500px">
+<div class="formClass pdT100">
 <form action="UploadJar" enctype="multipart/form-data" method="post">
-	<input type="file" name="file">
-	<input type="submit">
+	<div class="formClass">
+		<div class="pdT15">
+			<p style="display:inline">
+				<input id="uploadFile" class="upload" placeholder="Choose File" disabled="disabled" />
+			</p>
+			<div class="fileUpload btn btn-primary">
+				<span >Upload</span>
+				<input ng-click="file()" id="uploadBtn" type="file" class="upload" />
+			</div>
+		</div>		
+		<div class="pdT15">
+			<input class="file-upload btn btn-primary" type="submit">
+		</div>
+	</div>
 </form>
+</div>
