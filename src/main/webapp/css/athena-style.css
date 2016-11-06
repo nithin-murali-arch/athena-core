@@ -138,7 +138,10 @@ loginForm.bg {
 .upload {
     
     line-height: 28px;
-    background-color: gray;
+    background-color: blanchedalmond;
     font-family: inherit;
     font-size: small;
+}
+.clearB{
+	clear: both;	
 }

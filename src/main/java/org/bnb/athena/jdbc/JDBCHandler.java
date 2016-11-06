@@ -15,13 +15,17 @@ public class JDBCHandler {
 	//private static final String sqliteHome = "jdbc:sqlite:C:/work/product.db";
 	Logger logger = Logger.getLogger("JDBCHandler");
 	private static JDBCHandler handler = null;
-	private Connection conn;
+	private static Connection conn;
 	private JDBCHandler() {
 		try {
 			System.out.println(sqliteHome);
 			JdbcDataSource ds = new JdbcDataSource();
 			ds.setURL(sqliteHome);
-			conn = ds.getConnection();
+			try {
+				conn = ds.getConnection();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			runInitScripts();
 		} catch (SQLException e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
@@ -32,6 +36,13 @@ public class JDBCHandler {
 		if(handler == null){
 			handler = new JDBCHandler();
 		}
+		JdbcDataSource ds = new JdbcDataSource();
+		ds.setURL(sqliteHome);
+		try {
+			conn = ds.getConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return handler;
 	}
 	
@@ -40,19 +51,24 @@ public class JDBCHandler {
 		stmt.execute("CREATE TABLE IF NOT EXISTS JARS(JARNAME VARCHAR2(100) PRIMARY KEY)");
 		stmt.execute("CREATE TABLE IF NOT EXISTS ADMINS(USERNAME VARCHAR2(100) PRIMARY KEY, PASSWORD TEXT)");
 		stmt.execute("INSERT INTO ADMINS (USERNAME, PASSWORD) SELECT 'admin', 'admin' WHERE NOT EXISTS (SELECT * From ADMINS WHERE USERNAME = 'admin')");
-		stmt.execute("CREATE TABLE IF NOT EXISTS APPPARAMS(KEY VARCHAR2(50) PRIMARY KEY, VALUE VARCHAR2(50)");
+		stmt.execute("CREATE TABLE IF NOT EXISTS APPPARAMS(KEYTEXT VARCHAR2(50) PRIMARY KEY, VALUETEXT VARCHAR2(50))");
+		stmt.execute("INSERT INTO APPPARAMS (KEYTEXT, VALUETEXT) SELECT 'testKey', 'testText' WHERE NOT EXISTS (SELECT * From APPPARAMS WHERE KEYTEXT = 'testKey')");
+		stmt.close();
+		conn.close();
 	}
 	
 	public void execute(String query) throws SQLException{
 		Statement stmt = conn.createStatement();
 		stmt.execute(query);
 		stmt.close();
+		conn.close();
 	}
 	
 	public JSONArray executeQuery(String query) throws SQLException{
 		Statement stmt = conn.createStatement();
 		JSONArray array = ResultsetJsonConverter.convert(stmt.executeQuery(query));
 		stmt.close();
+		conn.close();
 		return array;
 	}
 }
