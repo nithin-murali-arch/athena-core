@@ -74,6 +74,11 @@ app.controller("JarUpload", [ '$scope', 'bnbHttpService', function($scope, bnbHt
 			$scope.error = "No file chosen!";
 		}
 	}
+	$scope.file = function() {
+	    document.getElementById("uploadBtn").onchange = function () {
+    	    	document.getElementById("uploadFile").value = this.value;
+    	    }
+       };
 	function receivedText() {
 	    document.getElementById('editor').appendChild(document.createTextNode(fr.result));
 	  } 
