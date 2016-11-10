@@ -74,7 +74,21 @@ app.controller("JarUpload", ['$scope', 'Upload', '$timeout', 'bnbHttpService', f
         console.log($scope.appParams);
         $scope.jarGrid = {
                 headers: jarColumns,
-                data: $scope.jars
+                data: $scope.jars,
+                fireDelete: function(key){
+                    bnbHttpService.call({
+                        'url': 'services/moduleHandler/remove/' + key,
+                        'method': 'GET'
+                    }).then(function(response) {
+                        console.log(response);
+                        $scope.jars = JSON.parse(response.data);
+                        prepareJars();
+                        console.log($scope.appParams);
+                        $scope.jarGrid.jars = $scope.jars;
+                        key = undefined;
+                        alert("Jar deleted successfully.");
+                    });
+                }
             };
 
 
@@ -90,7 +104,21 @@ app.controller("JarUpload", ['$scope', 'Upload', '$timeout', 'bnbHttpService', f
         $scope.appGrid = {
                 headers: appColumns,
                 data: $scope.appParams,
-                formBelow: true
+                formBelow: true,
+                fireDelete: function(key){
+                	bnbHttpService.call({
+                        'url': 'services/moduleHandler/removeParam/' + key,
+                        'method': 'GET'
+                    }).then(function(response) {
+                        console.log(response);
+                        $scope.appParams = JSON.parse(response.data);
+                        prepareApps();
+                        console.log($scope.appParams);
+                        $scope.appGrid.data = $scope.appParams;
+                        key = undefined;
+                        value = undefined;
+                    });
+                }
             };
         $scope.appGrid.fire = function(key, value){
             bnbHttpService.call({
@@ -153,7 +181,7 @@ app.controller("JarUpload", ['$scope', 'Upload', '$timeout', 'bnbHttpService', f
         var objA = [];
         angular.forEach($scope.jars, function(value, key) {
             var obj = {};
-            obj.key = value.jarName;
+            obj.key = value.JARNAME;
             objA.push(obj);
         });
         $scope.jars = objA;

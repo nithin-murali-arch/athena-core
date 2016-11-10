@@ -30,15 +30,15 @@ public class RemoveJar {
 		return JDBCHandler.getInstance().executeQuery(SQLQueries.listAppParam).toString();
 	}
 	
-	@POST
-	@Path("/remove")
-	public String remove(String jar) throws IOException, SQLException {
+	@GET
+	@Path("/remove/{jar}")
+	public String remove(@PathParam("jar") String jar) throws IOException, SQLException {
 		File f = new File(USER_HOME + jar);
 		File[] files = f.listFiles();
 		deleteFilesRecursively(files, jar);
 		System.out.println(fileCount + "files deleted");
 		JDBCHandler.getInstance().execute(SQLQueries.deleteQuery.replace("?", jar));
-		return "done";
+		return JDBCHandler.getInstance().executeQuery(SQLQueries.listAppParam).toString()
 	}
 	
 	@GET

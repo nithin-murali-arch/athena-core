@@ -12,12 +12,12 @@
 			<tr ng-repeat="row in grid.data">
 				<td>{{row.key}}</td>
 				<td>{{row.value}}</td>
-				<td ng-if="!grid.formBelow"><button ng-click="grid.fire(row.key)"><span class="glyphicon glyphicon-remove-circle"></span></button></td>
+				<td><button ng-click="grid.fireDelete(row.key)"><span class="glyphicon glyphicon-remove-circle"></span></button></td>
 			</tr>
 			<tr ng-if="grid.formBelow">
 				<td><input type="text" ng-model="param1"></td>
 				<td><input type="text" ng-model="param2"></td>
-				<td><button ng-click="grid.fire(param1, param2);"><span class="glyphicon glyphicon-ok-circle"></span></button>
+				<td><button ng-click="grid.fire(param1, param2);param1='';param2=''"><span class="glyphicon glyphicon-ok-circle"></span></button>
 			</tr>
 		</tbody>
 	</table>
