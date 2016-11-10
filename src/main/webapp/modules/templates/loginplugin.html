@@ -1,0 +1,71 @@
+<html>
+<head>
+</head>
+<body ng-app="AthenaApp" ng-controller="LoginController">
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Athena Plugin</a>
+        </div>
+        <div class="navbar-brand pdL20">
+          <input type="text" placeholder="Search" />
+          </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="#home">Home</a></li>
+            <li><a href="#login">Login</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div id="home" class="jumbotron">
+      <div class="container">
+        <h1>Welcome to Athena!</h1>
+        <p>Nithin is mass Nithin is mas Nithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is mas Nithin is mass Nithin is mas Nithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is mas Nithin is mass Nithin is mas Nithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is masNithin is mas.</p>
+        <p><a class="btn btn-danger btn-lg" href="#login" role="button">Login &raquo;</a></p>
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="login" class="row">
+			<div layout="column" class="mrTM30" layout-align="center center" layout-fill>
+			  <div class="loginBox md-whiteframe-z1"  layout="column">
+					    <md-toolbar>     
+					      	<h2 class="md-toolbar-tools">
+					          	<span>Login</span>
+					        </h2>
+					    </md-toolbar>
+				    	<md-content class="md-padding" layout="column">
+					      	<md-input-container>
+					        	<label> Username </label>
+					        	<input type="text" ng-model="login.username">
+					      	</md-input-container>
+					      	<md-input-container>
+					        	<label> Password </label>
+					        	<input type="password" ng-model="login.password" ng-keypress="watchKeys($event)">
+					      	</md-input-container>
+					      	<div class="pdT20" claslayout="row" layout-align="center center">
+					      		<md-button class="md-raised md-primary" ng-click="submitLogin()">Submit
+					      		</md-button>
+					      	</div>
+					    </md-content>
+				</div>
+			</div>
+      </div>
+    </div>
+
+    <footer class="fixedBottom">
+      	 <div class="container">
+        </div>
+    </footer>
+
+</body>
+</html>
