@@ -1,21 +1,39 @@
-<article style="background:  #272125; height:500px">
-<div class="formClass pdT100">
-	<div class="formClass">
-		<div class="pdT15">
-			<p style="display:inline">
-				<input id="uploadFile" class="upload" ng-model="fileName" placeholder="Pick File --->" disabled="disabled" />
-			</p>
-			<button class="fileUpload btn btn-danger">
-				<span >Pick File</span>
-				<input ng-click="file()" ngf-select ng-model="file" id="uploadBtn" type="file" class="upload" />
-			</button>
-			<button class="btn btn-primary clearB" ng-click="upload(file)">Upload!</button>
-		</div>		
+<article>
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">Athena Core</a>
+			</div>
+		</div>
+	</nav>
+	<div class="pdT100">
+		<div>
+			<div class="pdT15">
+				<p style="display: inline">
+					<input id="uploadFile" class="upload" ng-model="fileName"
+						placeholder="Pick File --->" disabled="disabled" />
+				</p>
+				<button class="fileUpload btn btn-danger">
+					<span>Pick File</span> <input ng-click="file()" ngf-select
+						ng-model="file" id="uploadBtn" type="file" class="upload" />
+				</button>
+				<button class="btn btn-primary clearB" ng-click="upload(file)">Upload!</button>
+			</div>
+		</div>
+		<div class="appParams">
+			<bnb-grid grid="appGrid" />
+		</div>
+		<div class="jars">
+			<bnb-grid grid="jarGrid" />
+		</div>
 	</div>
-	<div class="appParams">
-		<bnb-grid grid="appGrid"/>
-	</div>
-	<div class="jars">
-		<bnb-grid grid="jarGrid"/>
-	</div>
-</div>
+	<footer class="fixedBottom">
+		<div class="container"></div>
+	</footer>
+</article>
