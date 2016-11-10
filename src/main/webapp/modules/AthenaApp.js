@@ -12,6 +12,16 @@ app.config(['$routeProvider', function($routeProvider) {
     });
 }]);
 
+app.directive('bnbGrid', function() {
+    return {
+        restrict: 'E',
+        scope: {
+            grid: '=grid'
+        },
+        templateUrl : 'templates/grid.html'
+    }
+})
+
 app.service('bnbHttpService', ['$http', '$q', function($http, $q) {
     this.call = function(config) {
         var deferred = $q.defer();
@@ -80,6 +90,16 @@ app.controller("JarUpload", ['$scope', 'Upload', '$timeout', function($scope, Up
         		$scope.fileName = "C:\\Fakepath\\" +newValue.name;
         	}
         });
+        
+        var jarColumns = ['jarName'];
+        var appColumns = ['Param Name', 'Param Value'];
+        $scope.jarGrid = {
+        		headers: jarColumns
+        };
+        
+        $scope.appGrid = {
+        		headers: appColumns
+        };
 //            document.getElementById("uploadBtn").onchange = function() {
 //                document.getElementById("uploadFile").value = this.value;
 //            };
