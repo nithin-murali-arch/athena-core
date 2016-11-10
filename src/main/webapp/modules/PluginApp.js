@@ -60,6 +60,21 @@ app.controller("LoginPluginController", ['$scope', 'bnbHttpService', '$location'
             $scope.submitLogin();
         }
     };
+
+    $scope.routeToView = function(name) {
+        var routeInfo = {
+            method: "get",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            dataType: 'json',
+            url: 'services/pluginhub/searchAll/' + name
+        };
+
+        bnbHttpService.call(routeInfo).then(function(response) {
+            data = response;
+            });
+    };
 }]);
 
 app.controller("JarUploadController", ['$scope', 'Upload', '$timeout', 'bnbHttpService', function($scope, Upload, $timeout, bnbHttpService) {

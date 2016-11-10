@@ -14,7 +14,7 @@
 	</nav>
 	<div class="container">
 		<div>
-			<div class="pdT15">
+			<div style="padding-top: 100px">
 				<p style="display: inline">
 					<input id="uploadFile" class="upload" ng-model="fileName"
 						placeholder="Pick File --->" disabled="disabled" />
@@ -22,7 +22,7 @@
 				<button class="fileUpload btn btn-danger">
 					<span>Pick File</span> <input ng-click="file()" ngf-select
 						ng-model="file" id="uploadBtn" type="file" class="upload" />
-				</button>
+				</button> 	
 				<button class="btn btn-primary clearB" ng-click="upload(file)">Upload!</button>
 			</div>
 		</div>
