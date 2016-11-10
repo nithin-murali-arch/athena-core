@@ -18,7 +18,6 @@ app.config(['$routeProvider', function($routeProvider) {
         redirectTo: '/login'
     });
 }]);
-
 app.directive('bnbGrid', function() {
     return {
         restrict: 'E',
