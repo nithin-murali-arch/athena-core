@@ -55,7 +55,7 @@ app.controller("LoginController", ['$scope', 'bnbHttpService', '$location', func
         bnbHttpService.call(loginConfig).then(function(response) {
             data = response;
             console.log(response);
-            if (response.data.loggedin) {
+            if (response.data.loggedin) {    
                 $location.path("/upload");
             }
         });
@@ -84,6 +84,7 @@ app.controller("LoginPluginController", ['$scope', 'bnbHttpService', '$location'
             data = response;
             console.log(response);
             if (response.data.loggedin) {
+		sessionStorage.UserName = $scope.login.username;    
                 $location.path("/view");
             }
         });
@@ -96,6 +97,11 @@ app.controller("LoginPluginController", ['$scope', 'bnbHttpService', '$location'
 }]);
 
 app.controller("JarUpload", ['$scope', 'Upload', '$timeout', 'bnbHttpService', function($scope, Upload, $timeout, bnbHttpService) {
+	
+	if (sessionStorage.UserName.length !== 0)
+   	{
+        $scope.loggedin = true ;
+    	}
 		
     	var listAllData = bnbHttpService.call({'url': 'services/moduleHandler/listAll', 'method': 'GET'}).then(function(response) {
     		console.log(response);
@@ -119,7 +125,7 @@ app.controller("JarUpload", ['$scope', 'Upload', '$timeout', 'bnbHttpService', f
                 	alert(file.result.error);
                 }
                 else{
-                	delete $scope.file;
+                    delete $scope.file;
                     $scope.fileName = "";
                     $scope.appParams = file.result.parameters
                     $scope.jars = file.result.jars;
