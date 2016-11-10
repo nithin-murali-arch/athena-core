@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import org.bnb.athena.jdbc.JDBCHandler;
 import org.bnb.athena.queries.SQLQueries;
@@ -39,6 +40,20 @@ public class RemoveJar {
 		JDBCHandler.getInstance().execute(SQLQueries.deleteQuery.replace("?", jar));
 		return "done";
 	}
+	
+	@GET
+	@Path("/addParam/{key}/{value}")
+	public String addParam(@PathParam("key") String key, @PathParam("value") String value) throws SQLException{
+		JDBCHandler.getInstance().execute(SQLQueries.addAppParam.replace("?", key).replace("#", value));
+		return JDBCHandler.getInstance().executeQuery(SQLQueries.listAppParam).toString();
+	}
+	
+	@GET
+	@Path("/removeParam/{key}")
+	public String removeParam(@PathParam("key") String key) throws SQLException{
+		JDBCHandler.getInstance().execute(SQLQueries.removeAppParam.replace("?", key));
+		return JDBCHandler.getInstance().executeQuery(SQLQueries.listAppParam).toString();
+	}	
 
 	private void deleteFilesRecursively(File[] files, String jar){
 		for(File f: files){
