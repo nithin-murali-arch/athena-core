@@ -18,6 +18,9 @@ import java.util.jar.JarEntry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.ObjectName;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -29,6 +32,9 @@ import javax.servlet.http.Part;
 import javax.swing.plaf.synth.SynthSeparatorUI;
 import javax.ws.rs.core.Response;
 
+import org.apache.catalina.Server;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.core.StandardEngine;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -152,6 +158,12 @@ public class UploadJar extends HttpServlet {
 		writer.println(json.toString());
 		try {
 			sendToRegistry();
+			MBeanServer mBeanServer = MBeanServerFactory.findMBeanServer(null).get(0);
+		    ObjectName name = new ObjectName("Catalina", "type", "Server");
+		    Server server = (Server) mBeanServer.getAttribute(name, "managedResource");
+		    StandardEngine engine = (StandardEngine) server.findService("Catalina").getContainer();
+		    StandardContext context = (StandardContext) engine.findChild(engine.getDefaultHost()).findChild(getServletContext().getContextPath());
+		    context.reload();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
