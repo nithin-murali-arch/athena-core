@@ -1,15 +1,15 @@
 "use strict";
-var app = angular.module('AthenaApp', ['ngMaterial', 'ui.bootstrap', 'ngRoute', 'ngFileUpload']);
+var app = angular.module('PluginApp', ['ngMaterial', 'ui.bootstrap', 'ngRoute', 'ngFileUpload']);
 
 app.config(['$routeProvider', function($routeProvider) {
-    $routeProvider.when('/login', {
-        templateUrl: 'modules/templates/login.html',
-        controller: 'LoginController'
-    }).when('/upload', {
-        templateUrl: 'modules/templates/addJar.html',
-        controller: 'JarUpload'
+    $routeProvider.when('/loginplugin', {
+        templateUrl: 'modules/templates/loginplugin.html',
+        controller: 'LoginPluginController'
+    }).when('/view', {
+        templateUrl: 'modules/templates/view.html',
+        controller: 'JarUploadController'
     }).otherwise({
-        redirectTo: '/login'
+        redirectTo: '/loginplugin'
     });
 }]);
 app.directive('bnbGrid', function() {
@@ -32,7 +32,8 @@ app.service('bnbHttpService', ['$http', '$q', function($http, $q) {
     };
 }]);
 
-app.controller("LoginController", ['$scope', 'bnbHttpService', '$location', function($scope, bnbHttpService, $location) {
+
+app.controller("LoginPluginController", ['$scope', 'bnbHttpService', '$location', function($scope, bnbHttpService, $location) {
     var data;
     $scope.login = {};
     $scope.submitLogin = function() {
@@ -49,7 +50,8 @@ app.controller("LoginController", ['$scope', 'bnbHttpService', '$location', func
             data = response;
             console.log(response);
             if (response.data.loggedin) {
-                $location.path("/upload");
+            	sessionStorage.UserName = $scope.login.username;
+                $location.path("/view");
             }
         });
     };
@@ -60,10 +62,13 @@ app.controller("LoginController", ['$scope', 'bnbHttpService', '$location', func
     };
 }]);
 
-app.controller("JarUpload", ['$scope', 'Upload', '$timeout', 'bnbHttpService', function($scope, Upload, $timeout, bnbHttpService) {
-    
-	var jarColumns = ['jarName'];
-    var appColumns = ['Param Name', 'Param Value'];  
+app.controller("JarUploadController", ['$scope', 'Upload', '$timeout', 'bnbHttpService', function($scope, Upload, $timeout, bnbHttpService) {
+    var jarColumns = ['jarName'];
+    var appColumns = ['Param Name', 'Param Value'];
+    if (sessionStorage.UserName.length !== 0)
+    {
+        $scope.loggedin = true ;
+    }   
     bnbHttpService.call({
         'url': 'services/moduleHandler/listAll',
         'method': 'GET'
