@@ -7,6 +7,12 @@ app.config(['$routeProvider', function($routeProvider) {
     }).when('/upload', {
         templateUrl: 'modules/templates/addJar.html',
         controller: 'JarUpload'
+    }).when('/view', {
+        templateUrl: 'modules/templates/view.html',
+        controller: 'JarUpload'
+    }).when('/loginplugin', {
+        templateUrl: 'modules/templates/loginplugin.html',
+        controller: 'LoginController'
     }).otherwise({
         redirectTo: '/login'
     });
