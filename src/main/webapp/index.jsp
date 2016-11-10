@@ -16,7 +16,7 @@
 <script type="text/javascript" src="js/bootstrap.js"></script>
 <script type="text/javascript" src="modules/AthenaApp.js"></script>
 </head>
-<body ng-app="AthenaApp">
+<body ng-app="AthenaApp"  style="background: url('images/05-white-brick.png')">
 	<div ng-view></div>
 </body>
 </html>
