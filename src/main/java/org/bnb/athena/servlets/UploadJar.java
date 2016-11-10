@@ -33,6 +33,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.bnb.athena.jdbc.JDBCHandler;
 import org.bnb.athena.queries.SQLQueries;
+import org.bnb.athena.utils.ClassFinder;
 import org.h2.jdbcx.JdbcDataSource;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -177,16 +178,19 @@ public class UploadJar extends HttpServlet {
 		//TODO JSONObject registryUrl = JDBCHandler.getInstance().executeQuery(SQLQueries.findParam.replace("?", "apiGatewayURL")).getJSONObject(0);
 		if(true){//TODO registryUrl != null){
 			//TODO String url = registryUrl.getString("KEYTEXT");
-			Reflections reflections = new Reflections("org.bnb.athena.restapis");
-			List<Class<? extends Object>> allClasses = new ArrayList(reflections.getSubTypesOf(Object.class));
-		    for(Class tempClass: allClasses){
+			List<Class<?>> classes = ClassFinder.find("org.bnb.athena.restapis");
+			JSONArray array = new JSONArray();
+		    for(Class tempClass: classes){
 		    	AbstractResource resource = IntrospectionModeller.createResource(tempClass);
 				System.out.println("Path is " + resource.getPath().getValue());
 			    String uriPrefix = resource.getPath().getValue();
 			    for (AbstractSubResourceMethod srm :resource.getSubResourceMethods())
 			    {
-			    	String uri = uriPrefix + "/" + srm.getPath().getValue();
-			        System.out.println(srm.getHttpMethod() + " at the path " + uri + " return " + srm.getReturnType().getName());
+			    	JSONObject object = new JSONObject();
+			    	String uri = uriPrefix + srm.getPath().getValue();
+			    	object.put("httpMethod", srm.getHttpMethod());
+			    	object.put("uri", uri);
+			        array.put(object);
 			    }
 		    }
 		    //TODO
