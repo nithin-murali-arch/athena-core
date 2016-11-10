@@ -1,5 +1,5 @@
 "use strict";
-var app = angular.module('AthenaApp', ['ngRoute', 'ngFileUpload']);
+var app = angular.module('AthenaApp', ['ngMaterial','ui.bootstrap','ngRoute', 'ngFileUpload']);
 app.config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/login', {
         templateUrl: 'modules/templates/login.html',
