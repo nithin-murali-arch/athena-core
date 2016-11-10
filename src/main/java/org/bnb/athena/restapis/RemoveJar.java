@@ -38,7 +38,7 @@ public class RemoveJar {
 		deleteFilesRecursively(files, jar);
 		System.out.println(fileCount + "files deleted");
 		JDBCHandler.getInstance().execute(SQLQueries.deleteQuery.replace("?", jar));
-		return JDBCHandler.getInstance().executeQuery(SQLQueries.listAppParam).toString();
+		return JDBCHandler.getInstance().executeQuery(SQLQueries.listQuery).toString();
 	}
 	
 	@GET

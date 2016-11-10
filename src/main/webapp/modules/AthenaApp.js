@@ -151,8 +151,8 @@ app.controller("JarUpload", ['$scope', 'Upload', '$timeout', 'bnbHttpService', f
                 } else {
                     delete $scope.file;
                     $scope.fileName = "";
-                    $scope.appParams = file.result.appParams;
-                    $scope.jars = file.result.jars;
+                    $scope.appParams = JSON.parse(file.result.appParams);
+                    $scope.jars = JSON.parse(file.result.jars);
                     prepareApps();
                     prepareJars();
                     $scope.jarGrid.data = $scope.jars;
