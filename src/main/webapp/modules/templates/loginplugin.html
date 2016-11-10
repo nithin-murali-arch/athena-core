@@ -1,7 +1,7 @@
 <html>
 <head>
 </head>
-<body ng-app="AthenaApp" ng-controller="LoginController">
+<body ng-app="PluginApp" ng-controller="LoginPluginController">
 
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
@@ -12,24 +12,22 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="#">Athena Plugin</a>
-        </div>
-        <div class="navbar-brand pdL20">
-          <input type="text" placeholder="Search" />
-          </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li class="active"><a href="#home">Home</a></li>
-            <li><a href="#login">Login</a></li>
-          </ul>
+        </div>s
         </div><!--/.nav-collapse -->
       </div>
     </nav>
 
+    <div class="filters" style="margin-top: 60px" layout="row" layout-align="center center">
+      <md-input-container>
+            <label>Enter Search Term</label>
+            <input type="text" ng-model="name">
+            <md-button class="md-raised md-primary pull-right" style="margin-top:-40px" ng-click="">ok</md-button>
+      </md-input-container>
+    </div>
+
     <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div id="home" class="jumbotron" style="padding: 25% 100px;
-    margin-bottom: 0px;">
-      <div class="container">
-        <div id="login" class="row">
+      <div class="container" id="login">
+        <div  class="row" style="margin-top: 100px">
           <div layout="column" class="mrTM30" layout-align="center center" layout-fill>
             <div class="loginBox md-whiteframe-z1"  layout="column">
                   <md-toolbar>     
@@ -55,7 +53,6 @@
           </div>
         </div>
       </div>
-    </div>
 
     <footer class="fixedBottom">
       	 <div class="container">
