@@ -23,6 +23,12 @@ public class RemoveJar {
 		return JDBCHandler.getInstance().executeQuery(SQLQueries.listQuery).toString();
 	}
 	
+	@GET
+	@Path("/listApps")
+	public String moduleApps() throws SQLException{
+		return JDBCHandler.getInstance().executeQuery(SQLQueries.listAppParam).toString();
+	}
+	
 	@POST
 	@Path("/remove")
 	public String remove(String jar) throws IOException, SQLException {

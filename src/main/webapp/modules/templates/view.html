@@ -1,0 +1,40 @@
+<article>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Athena Plugin</a>
+        </div>
+      </div>
+    </nav>
+<div class="container pdT100">
+	<div>
+	   <div class="row">
+			<div>NAME
+			 <input id="name"/>
+			</div>
+			<div>Description
+				<input id="description"/>
+			</div>
+		</div>	
+		<div class="pdT15">
+			<p style="display:inline">
+				<input id="uploadFile" class="upload" ng-model="fileName" placeholder="Pick File --->" disabled="disabled" />
+			</p>
+			<button class="fileUpload btn btn-danger">
+				<span >Pick File</span>
+				<input ng-click="file()" ngf-select ng-model="file" id="uploadBtn" type="file" class="upload" />
+			</button>
+			<button class="btn btn-primary clearB" ng-click="upload(file)">Upload!</button>
+		</div>		
+	</div>
+</div>
+ <footer class="fixedBottom">
+      	 <div class="container">
+        </div>
+    </footer>
+ </article>

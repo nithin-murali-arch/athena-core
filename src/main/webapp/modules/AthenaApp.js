@@ -1,5 +1,6 @@
 "use strict";
 var app = angular.module('AthenaApp', ['ngMaterial','ui.bootstrap','ngRoute', 'ngFileUpload']);
+
 app.config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/login', {
         templateUrl: 'modules/templates/login.html',
@@ -7,6 +8,12 @@ app.config(['$routeProvider', function($routeProvider) {
     }).when('/upload', {
         templateUrl: 'modules/templates/addJar.html',
         controller: 'JarUpload'
+    }).when('/view', {
+        templateUrl: 'modules/templates/view.html',
+        controller: 'JarUpload'
+    }).when('/loginplugin', {
+        templateUrl: 'modules/templates/loginplugin.html',
+        controller: 'LoginPluginController'
     }).otherwise({
         redirectTo: '/login'
     });
@@ -18,9 +25,9 @@ app.directive('bnbGrid', function() {
         scope: {
             grid: '=grid'
         },
-        templateUrl : 'templates/grid.html'
+        templateUrl : 'modules/templates/grid.html'
     }
-})
+});
 
 app.service('bnbHttpService', ['$http', '$q', function($http, $q) {
     this.call = function(config) {
@@ -60,8 +67,44 @@ app.controller("LoginController", ['$scope', 'bnbHttpService', '$location', func
     };
 }]);
 
-app.controller("JarUpload", ['$scope', 'Upload', '$timeout', function($scope, Upload, $timeout) {
+app.controller("LoginPluginController", ['$scope', 'bnbHttpService', '$location', function($scope, bnbHttpService, $location) {
+    var data;
+    $scope.login = {};
+    $scope.submitLogin = function() {
+        var loginConfig = {
+            method: "post",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            dataType: 'json',
+            url: 'services/authenticate/login',
+            data: JSON.stringify($scope.login)
+        };
+        bnbHttpService.call(loginConfig).then(function(response) {
+            data = response;
+            console.log(response);
+            if (response.data.loggedin) {
+                $location.path("/view");
+            }
+        });
+    };
+    $scope.watchKeys = function($event) {
+        if ($event.keyCode === 13) {
+            $scope.submitLogin();
+        }
+    };
+}]);
 
+app.controller("JarUpload", ['$scope', 'Upload', '$timeout', 'bnbHttpService', function($scope, Upload, $timeout, bnbHttpService) {
+		
+    	var listAllData = bnbHttpService.call({'url': 'services/moduleHandler/listAll', 'method': 'GET'}).then(function(response) {
+    		console.log(response);
+        	return response;
+        });
+        var listAllApps = bnbHttpService.call({'url': 'services/moduleHandler/listApps', 'method': 'GET'}).then(function(response) {
+            console.log(response);
+        	return response;
+        });
     $scope.upload = function(file) {
         file.upload = Upload.upload({
             url: 'UploadJar',
@@ -78,15 +121,7 @@ app.controller("JarUpload", ['$scope', 'Upload', '$timeout', function($scope, Up
                 else{
                 	delete $scope.file;
                     $scope.fileName = "";
-                    $scope.appParams = file.result.parameters;
-                    var keyValues = [];
-                    angular.forEach(appParams, function(value, key) {
-                    	var obj = {};
-                    	obj.key = key;
-                    	obj.value = value;
-                    	keyValues.push(obj);
-                    });
-                    var jars = [];
+                    $scope.appParams = file.result.parameters
                     $scope.jars = file.result.jars;
                     var jarColumns = ['jarName'];
                     var appColumns = ['Param Name', 'Param Value'];
@@ -95,9 +130,7 @@ app.controller("JarUpload", ['$scope', 'Upload', '$timeout', function($scope, Up
                     };
                     
                     $scope.appGrid = {
-                    		headers: appColumns,
-                    		formBelow: true,
-                    		body: keyValues
+                    		headers: appColumns
                     };
                 }
                 
@@ -109,4 +142,6 @@ app.controller("JarUpload", ['$scope', 'Upload', '$timeout', function($scope, Up
         		$scope.fileName = "C:\\Fakepath\\" +newValue.name;
         	}
         });
+        
+
 }]);
