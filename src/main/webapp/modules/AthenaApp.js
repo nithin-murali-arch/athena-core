@@ -78,8 +78,27 @@ app.controller("JarUpload", ['$scope', 'Upload', '$timeout', function($scope, Up
                 else{
                 	delete $scope.file;
                     $scope.fileName = "";
-                    $scope.appParams = file.result.parameters
+                    $scope.appParams = file.result.parameters;
+                    var keyValues = [];
+                    angular.forEach(appParams, function(value, key) {
+                    	var obj = {};
+                    	obj.key = key;
+                    	obj.value = value;
+                    	keyValues.push(obj);
+                    });
+                    var jars = [];
                     $scope.jars = file.result.jars;
+                    var jarColumns = ['jarName'];
+                    var appColumns = ['Param Name', 'Param Value'];
+                    $scope.jarGrid = {
+                    		headers: jarColumns
+                    };
+                    
+                    $scope.appGrid = {
+                    		headers: appColumns,
+                    		formBelow: true,
+                    		body: keyValues
+                    };
                 }
                 
             });
@@ -90,22 +109,4 @@ app.controller("JarUpload", ['$scope', 'Upload', '$timeout', function($scope, Up
         		$scope.fileName = "C:\\Fakepath\\" +newValue.name;
         	}
         });
-        
-        var jarColumns = ['jarName'];
-        var appColumns = ['Param Name', 'Param Value'];
-        $scope.jarGrid = {
-        		headers: jarColumns
-        };
-        
-        $scope.appGrid = {
-        		headers: appColumns
-        };
-//            document.getElementById("uploadBtn").onchange = function() {
-//                document.getElementById("uploadFile").value = this.value;
-//            };
-//        };
-//        function receivedText() {
-//    	    document.getElementById('editor').appendChild(document.createTextNode(fr.result));
-//    	} 
-//    };
 }]);

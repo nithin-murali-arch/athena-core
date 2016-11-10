@@ -9,5 +9,5 @@ public interface SQLQueries {
 	String addAppParam = "INSERT INTO APPPARAMS VALUES ('?','#')";
 	String listAppParam = "SELECT * FROM APPPARAMS";
 	String removeAppParam = "DELETE FROM APPPARAMS WHERE KEYTEXT='?'";
-	String findParam = "SELECT * FROM APPPARAMS WHERE KEYTEXT='?";
+	String findParam = "SELECT * FROM APPPARAMS WHERE KEYTEXT='?'";
 }

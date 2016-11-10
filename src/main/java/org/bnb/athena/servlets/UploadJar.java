@@ -72,49 +72,48 @@ public class UploadJar extends HttpServlet {
 		HttpSession session = (HttpSession) request.getSession();
 		PrintWriter writer = response.getWriter();
 		JSONObject json = new JSONObject();
-		if(session.getAttribute("userName") == null){
+		if (session.getAttribute("userName") == null) {
 			json.put("error", "Error: You must log in first!");
 			writer.println(json.toString());
-            writer.flush();
-            return;
+			writer.flush();
+			return;
 		}
 		if (!ServletFileUpload.isMultipartContent(request)) {
 			json.put("error", "Error: Request must be in multipart/form-data encoding.");
-            writer.println(json.toString());
-            writer.flush();
-            return;
-        }
-        DiskFileItemFactory factory = new DiskFileItemFactory();
-        factory.setSizeThreshold(1024 * 1024 * 300); //300MB
-        factory.setRepository(new File(System.getProperty("java.io.tmpdir")));
-        ServletFileUpload upload = new ServletFileUpload(factory);
-        upload.setFileSizeMax(1024 * 1024 * 300); //300MB
-        upload.setSizeMax(1024 * 1024 * 300); //300MB
+			writer.println(json.toString());
+			writer.flush();
+			return;
+		}
+		DiskFileItemFactory factory = new DiskFileItemFactory();
+		factory.setSizeThreshold(1024 * 1024 * 300); // 300MB
+		factory.setRepository(new File(System.getProperty("java.io.tmpdir")));
+		ServletFileUpload upload = new ServletFileUpload(factory);
+		upload.setFileSizeMax(1024 * 1024 * 300); // 300MB
+		upload.setSizeMax(1024 * 1024 * 300); // 300MB
 		String fileName = "";
 		String uploadPath = USER_HOME;
-        File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists()) {
-            uploadDir.mkdir();
-        }
-        try {
-            List<FileItem> formItems = upload.parseRequest(request);
-            if (formItems != null && formItems.size() > 0) {
-                for (FileItem item : formItems) {
-                    if (!item.isFormField()) {
-                        fileName = new File(item.getName()).getName();
-                        String filePath = uploadPath + File.separator + fileName;
-                        File storeFile = new File(filePath);
-                        item.write(storeFile);
-                        request.setAttribute("message",
-                            "Upload has been done successfully!");
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            request.setAttribute("message",
-                    "There was an error: " + ex.getMessage());
-        }
-		//*****************************UPLOAD COMPLETE***********************************//
+		File uploadDir = new File(uploadPath);
+		if (!uploadDir.exists()) {
+			uploadDir.mkdir();
+		}
+		try {
+			List<FileItem> formItems = upload.parseRequest(request);
+			if (formItems != null && formItems.size() > 0) {
+				for (FileItem item : formItems) {
+					if (!item.isFormField()) {
+						fileName = new File(item.getName()).getName();
+						String filePath = uploadPath + File.separator + fileName;
+						File storeFile = new File(filePath);
+						item.write(storeFile);
+						request.setAttribute("message", "Upload has been done successfully!");
+					}
+				}
+			}
+		} catch (Exception ex) {
+			request.setAttribute("message", "There was an error: " + ex.getMessage());
+		}
+		// *****************************UPLOAD
+		// COMPLETE***********************************//
 		File f = new File(USER_HOME);
 		if (!f.exists()) {
 			f.mkdir();
@@ -123,13 +122,15 @@ public class UploadJar extends HttpServlet {
 			File jar = new File(USER_HOME + pathSep + fileName);
 			String moduleName = fileName.substring(0, fileName.lastIndexOf("."));
 			File folder = new File(USER_HOME + pathSep + moduleName);
-			if(JDBCHandler.getInstance().executeQuery(SQLQueries.findJarQuery.replace("?", moduleName)).length() != 0){
+			if (JDBCHandler.getInstance().executeQuery(SQLQueries.findJarQuery.replace("?", moduleName))
+					.length() != 0) {
 				json.put("error", "Module Already exists! If a new version, remove existing version.");
 				writer.println(json);
 				return;
 			}
 			folder.mkdir();
-			jar.renameTo(new File(USER_HOME + pathSep + fileName.substring(0, fileName.lastIndexOf(".")) + pathSep + fileName));
+			jar.renameTo(new File(
+					USER_HOME + pathSep + fileName.substring(0, fileName.lastIndexOf(".")) + pathSep + fileName));
 			addJarContents(USER_HOME + pathSep + fileName.substring(0, fileName.lastIndexOf(".")), fileName);
 			JDBCHandler.getInstance().execute(SQLQueries.insertQuery.replace("?", moduleName));
 		} catch (Exception e) {
@@ -155,51 +156,38 @@ public class UploadJar extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//TODO org.apache.catalina.core.StandardContext
-		//getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
+		// TODO org.apache.catalina.core.StandardContext
+		// getServletContext().getRequestDispatcher("/index.jsp").forward(request,
+		// response);
 
 	}
 
-	private void writeToFile(InputStream uploadedInputStream, String uploadedFileLocation) {
-		try {
-			OutputStream out = new FileOutputStream(new File(uploadedFileLocation));
-			int read = 0;
-			byte[] bytes = new byte[1024];
-			out = new FileOutputStream(new File(uploadedFileLocation));
-			while ((read = uploadedInputStream.read(bytes)) != -1) {
-				out.write(bytes, 0, read);
+	private void sendToRegistry() throws Exception {
+		JSONArray registryArray = JDBCHandler.getInstance()
+				.executeQuery(SQLQueries.findParam.replace("?", "apiGatewayURL"));
+		if (registryArray.length() == 0) {
+			return;
+		}
+		JSONObject registryUrl = registryArray.getJSONObject(0);
+		String url = registryUrl.getString("KEYTEXT");
+		List<Class<?>> classes = ClassFinder.find("org.bnb.athena.restapis");
+		JSONArray array = new JSONArray();
+		for (Class tempClass : classes) {
+			AbstractResource resource = IntrospectionModeller.createResource(tempClass);
+			System.out.println("Path is " + resource.getPath().getValue());
+			String uriPrefix = resource.getPath().getValue();
+			for (AbstractSubResourceMethod srm : resource.getSubResourceMethods()) {
+				JSONObject object = new JSONObject();
+				String uri = uriPrefix + srm.getPath().getValue();
+				object.put("httpMethod", srm.getHttpMethod());
+				object.put("uri", uri);
+				array.put(object);
 			}
-			out.flush();
-			out.close();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-	}
-	
-	private void sendToRegistry() throws Exception{
-		JSONObject registryUrl = JDBCHandler.getInstance().executeQuery(SQLQueries.findParam.replace("?", "apiGatewayURL")).getJSONObject(0);
-		if(registryUrl != null){
-			String url = registryUrl.getString("KEYTEXT");
-			List<Class<?>> classes = ClassFinder.find("org.bnb.athena.restapis");
-			JSONArray array = new JSONArray();
-		    for(Class tempClass: classes){
-		    	AbstractResource resource = IntrospectionModeller.createResource(tempClass);
-				System.out.println("Path is " + resource.getPath().getValue());
-			    String uriPrefix = resource.getPath().getValue();
-			    for (AbstractSubResourceMethod srm :resource.getSubResourceMethods())
-			    {
-			    	JSONObject object = new JSONObject();
-			    	String uri = uriPrefix + srm.getPath().getValue();
-			    	object.put("httpMethod", srm.getHttpMethod());
-			    	object.put("uri", uri);
-			        array.put(object);
-			    }
-		    }
-			URL gatewayUrl = new URL(url);
-			HttpURLConnection conn = (HttpURLConnection) gatewayUrl.openConnection();
-			conn.setRequestProperty("discoveryContent", array.toString());
-			conn.connect();
-		}
+		URL gatewayUrl = new URL(url);
+		HttpURLConnection conn = (HttpURLConnection) gatewayUrl.openConnection();
+		conn.setRequestProperty("discoveryContent", array.toString());
+		conn.connect();
 	}
 
 	private void addJarContents(String pathToJar, String jar) throws Exception {
@@ -214,7 +202,8 @@ public class UploadJar extends HttpServlet {
 		if (src.isDirectory()) {
 			if (!dest.exists()) {
 				dest.mkdir();
-				//System.out.println("Directory copied from " + src + "  to " + dest);
+				// System.out.println("Directory copied from " + src + " to " +
+				// dest);
 			}
 			String files[] = src.list();
 			for (String file : files) {
@@ -232,7 +221,7 @@ public class UploadJar extends HttpServlet {
 			}
 			in.close();
 			out.close();
-			//System.out.println("File copied from " + src + " to " + dest);
+			// System.out.println("File copied from " + src + " to " + dest);
 		}
 	}
 }
