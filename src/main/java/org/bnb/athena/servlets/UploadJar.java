@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -175,9 +177,9 @@ public class UploadJar extends HttpServlet {
 	}
 	
 	private void sendToRegistry() throws Exception{
-		//TODO JSONObject registryUrl = JDBCHandler.getInstance().executeQuery(SQLQueries.findParam.replace("?", "apiGatewayURL")).getJSONObject(0);
-		if(true){//TODO registryUrl != null){
-			//TODO String url = registryUrl.getString("KEYTEXT");
+		JSONObject registryUrl = JDBCHandler.getInstance().executeQuery(SQLQueries.findParam.replace("?", "apiGatewayURL")).getJSONObject(0);
+		if(registryUrl != null){
+			String url = registryUrl.getString("KEYTEXT");
 			List<Class<?>> classes = ClassFinder.find("org.bnb.athena.restapis");
 			JSONArray array = new JSONArray();
 		    for(Class tempClass: classes){
@@ -193,10 +195,10 @@ public class UploadJar extends HttpServlet {
 			        array.put(object);
 			    }
 		    }
-		    //TODO
-			//URL gatewayUrl = new URL(url);
-			//HttpURLConnection conn = (HttpURLConnection) gatewayUrl.openConnection();
-			
+			URL gatewayUrl = new URL(url);
+			HttpURLConnection conn = (HttpURLConnection) gatewayUrl.openConnection();
+			conn.setRequestProperty("discoveryContent", array.toString());
+			conn.connect();
 		}
 	}
 
