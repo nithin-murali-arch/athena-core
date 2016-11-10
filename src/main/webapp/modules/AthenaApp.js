@@ -12,7 +12,7 @@ app.config(['$routeProvider', function($routeProvider) {
         controller: 'JarUpload'
     }).when('/loginplugin', {
         templateUrl: 'modules/templates/loginplugin.html',
-        controller: 'LoginController'
+        controller: 'LoginPluginController'
     }).otherwise({
         redirectTo: '/login'
     });
@@ -56,6 +56,34 @@ app.controller("LoginController", ['$scope', 'bnbHttpService', '$location', func
             console.log(response);
             if (response.data.loggedin) {
                 $location.path("/upload");
+            }
+        });
+    };
+    $scope.watchKeys = function($event) {
+        if ($event.keyCode === 13) {
+            $scope.submitLogin();
+        }
+    };
+}]);
+
+app.controller("LoginPluginController", ['$scope', 'bnbHttpService', '$location', function($scope, bnbHttpService, $location) {
+    var data;
+    $scope.login = {};
+    $scope.submitLogin = function() {
+        var loginConfig = {
+            method: "post",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            dataType: 'json',
+            url: 'services/authenticate/login',
+            data: JSON.stringify($scope.login)
+        };
+        bnbHttpService.call(loginConfig).then(function(response) {
+            data = response;
+            console.log(response);
+            if (response.data.loggedin) {
+                $location.path("/view");
             }
         });
     };
