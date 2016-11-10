@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -35,6 +36,11 @@ import org.bnb.athena.queries.SQLQueries;
 import org.h2.jdbcx.JdbcDataSource;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.reflections.Reflections;
+
+import com.sun.jersey.api.model.AbstractResource;
+import com.sun.jersey.api.model.AbstractSubResourceMethod;
+import com.sun.jersey.server.impl.modelapi.annotation.IntrospectionModeller;
 
 /**
  * Servlet implementation class UploadJar
@@ -114,7 +120,7 @@ public class UploadJar extends HttpServlet {
 			File jar = new File(USER_HOME + pathSep + fileName);
 			String moduleName = fileName.substring(0, fileName.lastIndexOf("."));
 			File folder = new File(USER_HOME + pathSep + moduleName);
-			if(JDBCHandler.getInstance().executeQuery(SQLQueries.findJarQuery.replace("?", moduleName)).getJSONObject(0).length() != 0){
+			if(JDBCHandler.getInstance().executeQuery(SQLQueries.findJarQuery.replace("?", moduleName)).length() != 0){
 				json.put("error", "Module Already exists! If a new version, remove existing version.");
 				writer.println(json);
 				return;
@@ -122,7 +128,7 @@ public class UploadJar extends HttpServlet {
 			folder.mkdir();
 			jar.renameTo(new File(USER_HOME + pathSep + fileName.substring(0, fileName.lastIndexOf(".")) + pathSep + fileName));
 			addJarContents(USER_HOME + pathSep + fileName.substring(0, fileName.lastIndexOf(".")), fileName);
-			JDBCHandler.getInstance().executeQuery(SQLQueries.insertQuery.replace("?", moduleName));
+			JDBCHandler.getInstance().execute(SQLQueries.insertQuery.replace("?", moduleName));
 		} catch (Exception e) {
 			json.put("error", "JARUPLOAD ERROR");
 			System.out.println("JARUPLOAD ERROR");
@@ -140,6 +146,13 @@ public class UploadJar extends HttpServlet {
 			logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 		writer.println(json.toString());
+		try {
+			sendToRegistry();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//TODO org.apache.catalina.core.StandardContext
 		//getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
 
 	}
@@ -159,6 +172,29 @@ public class UploadJar extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
+	
+	private void sendToRegistry() throws Exception{
+		//TODO JSONObject registryUrl = JDBCHandler.getInstance().executeQuery(SQLQueries.findParam.replace("?", "apiGatewayURL")).getJSONObject(0);
+		if(true){//TODO registryUrl != null){
+			//TODO String url = registryUrl.getString("KEYTEXT");
+			Reflections reflections = new Reflections("org.bnb.athena.restapis");
+			List<Class<? extends Object>> allClasses = new ArrayList(reflections.getSubTypesOf(Object.class));
+		    for(Class tempClass: allClasses){
+		    	AbstractResource resource = IntrospectionModeller.createResource(tempClass);
+				System.out.println("Path is " + resource.getPath().getValue());
+			    String uriPrefix = resource.getPath().getValue();
+			    for (AbstractSubResourceMethod srm :resource.getSubResourceMethods())
+			    {
+			    	String uri = uriPrefix + "/" + srm.getPath().getValue();
+			        System.out.println(srm.getHttpMethod() + " at the path " + uri + " return " + srm.getReturnType().getName());
+			    }
+		    }
+		    //TODO
+			//URL gatewayUrl = new URL(url);
+			//HttpURLConnection conn = (HttpURLConnection) gatewayUrl.openConnection();
+			
+		}
+	}
 
 	private void addJarContents(String pathToJar, String jar) throws Exception {
 		System.out.println("jar xf " + pathToJar);
@@ -172,7 +208,7 @@ public class UploadJar extends HttpServlet {
 		if (src.isDirectory()) {
 			if (!dest.exists()) {
 				dest.mkdir();
-				System.out.println("Directory copied from " + src + "  to " + dest);
+				//System.out.println("Directory copied from " + src + "  to " + dest);
 			}
 			String files[] = src.list();
 			for (String file : files) {
@@ -190,7 +226,7 @@ public class UploadJar extends HttpServlet {
 			}
 			in.close();
 			out.close();
-			System.out.println("File copied from " + src + " to " + dest);
+			//System.out.println("File copied from " + src + " to " + dest);
 		}
 	}
 }

@@ -6,8 +6,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -16,9 +23,16 @@ import javax.ws.rs.core.Response;
 
 import org.bnb.athena.jdbc.JDBCHandler;
 import org.bnb.athena.queries.SQLQueries;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.reflections.Reflections;
 
+import com.google.common.reflect.Reflection;
+import com.sun.jersey.api.model.AbstractResource;
+import com.sun.jersey.api.model.AbstractSubResourceMethod;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
+import com.sun.jersey.server.impl.modelapi.annotation.IntrospectionModeller;
 
 @Path("/upload")
 public class UploadJar {
@@ -35,10 +49,14 @@ public class UploadJar {
 		}
 		writeToFile(uploadedInputStream, USER_HOME + "/" + fileDetail.getFileName(), fileDetail.getFileName());
 		addJarContents(USER_HOME + "/" + fileDetail.getFileName());
+
 		return Response.status(200).entity("Pass").build();
 	}
 
-	private void writeToFile(InputStream uploadedInputStream, String uploadedFileLocation, String fileName) throws SQLException {
+	
+
+	private void writeToFile(InputStream uploadedInputStream, String uploadedFileLocation, String fileName)
+			throws SQLException {
 		try {
 			OutputStream out = new FileOutputStream(new File(uploadedFileLocation));
 			int read = 0;
