@@ -84,6 +84,7 @@ app.controller("LoginPluginController", ['$scope', 'bnbHttpService', '$location'
             data = response;
             console.log(response);
             if (response.data.loggedin) {
+        sessionStorage.UserName = $scope.login.username;
                 $location.path("/view");
             }
         });
@@ -98,6 +99,10 @@ app.controller("LoginPluginController", ['$scope', 'bnbHttpService', '$location'
 app.controller("JarUpload", ['$scope', 'Upload', '$timeout', 'bnbHttpService', function($scope, Upload, $timeout, bnbHttpService) {
     var jarColumns = ['jarName'];
     var appColumns = ['Param Name', 'Param Value'];
+    if (sessionStorage.UserName.length !== 0)
+    {
+        $scope.loggedin = true ;
+    }   
     bnbHttpService.call({
         'url': 'services/moduleHandler/listAll',
         'method': 'GET'
