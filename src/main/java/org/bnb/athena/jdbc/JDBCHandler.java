@@ -1,6 +1,7 @@
 package org.bnb.athena.jdbc;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
@@ -11,24 +12,22 @@ import org.h2.jdbcx.JdbcDataSource;
 import org.json.JSONArray;
 
 public class JDBCHandler {
-	private static final String sqliteHome = "jdbc:h2:~/athenaApp";
+	private static final String sqliteHome = "jdbc:mariadb://localhost:3306/acore";
 	//private static final String sqliteHome = "jdbc:sqlite:C:/work/product.db";
 	Logger logger = Logger.getLogger("JDBCHandler");
 	private static JDBCHandler handler = null;
 	private static Connection conn;
 	private JDBCHandler() {
+		
+		System.out.println(sqliteHome);
 		try {
-			System.out.println(sqliteHome);
-			JdbcDataSource ds = new JdbcDataSource();
-			ds.setURL(sqliteHome);
-			try {
-				conn = ds.getConnection();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			runInitScripts();
+			Class.forName("org.mariadb.jdbc.Driver");
+			conn = DriverManager.getConnection(sqliteHome, "root", "");
 		} catch (SQLException e) {
-			logger.log(Level.SEVERE, e.getMessage(), e);
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -36,25 +35,16 @@ public class JDBCHandler {
 		if(handler == null){
 			handler = new JDBCHandler();
 		}
-		JdbcDataSource ds = new JdbcDataSource();
-		ds.setURL(sqliteHome);
 		try {
-			conn = ds.getConnection();
+			Class.forName("org.mariadb.jdbc.Driver");
+			conn = DriverManager.getConnection(sqliteHome, "root", "");
 		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return handler;
-	}
-	
-	public void runInitScripts() throws SQLException{
-		Statement stmt = conn.createStatement();
-		stmt.execute("CREATE TABLE IF NOT EXISTS JARS(JARNAME VARCHAR2(100) PRIMARY KEY)");
-		stmt.execute("CREATE TABLE IF NOT EXISTS ADMINS(USERNAME VARCHAR2(100) PRIMARY KEY, PASSWORD TEXT)");
-		stmt.execute("INSERT INTO ADMINS (USERNAME, PASSWORD) SELECT 'admin', 'admin' WHERE NOT EXISTS (SELECT * From ADMINS WHERE USERNAME = 'admin')");
-		stmt.execute("CREATE TABLE IF NOT EXISTS APPPARAMS(KEYTEXT VARCHAR2(50) PRIMARY KEY, VALUETEXT VARCHAR2(50))");
-		stmt.execute("INSERT INTO APPPARAMS (KEYTEXT, VALUETEXT) SELECT 'testKey', 'testText' WHERE NOT EXISTS (SELECT * From APPPARAMS WHERE KEYTEXT = 'testKey')");
-		stmt.close();
-		conn.close();
 	}
 	
 	public void execute(String query) throws SQLException{

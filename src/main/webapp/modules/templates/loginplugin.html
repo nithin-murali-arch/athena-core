@@ -1,7 +1,7 @@
 <html>
 <head>
 </head>
-<body ng-app="PluginApp" ng-controller="LoginPluginController">
+<body >
 
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
@@ -21,8 +21,13 @@
       <md-input-container>
             <label>Enter Search Term</label>
             <input type="text" ng-model="name">
-            <md-button class="md-raised md-primary pull-right" style="margin-top:-40px" ng-click="routeToView(name);">ok</md-button>
+            <md-button class="md-raised md-primary pull-right" style="margin-top:-40px" ng-click="searchResult(name);">ok</md-button>
       </md-input-container>
+    </div>
+    <div class="row" ng-show="pluginData"  style="margin-left:600px">
+    		<ul ng-repeat="plugin in pluginData">
+    			<li><a ng-click="routeToView(plugin);">{{plugin.pluginName}}</a></li>
+    		</ul>
     </div>
 
     <!-- Main jumbotron for a primary marketing message or call to action -->

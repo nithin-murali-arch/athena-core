@@ -1,40 +1,73 @@
 <article>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">Athena Plugin</a>
-        </div>
-      </div>
-    </nav>
-<div class="container pdT100">
-	<div ng-if="loggedin">
-	   <div class="row">
-			<div>NAME
-			 <input id="name"/>
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">Athena Plugin</a>
 			</div>
-			<div>Description
-				<input id="description"/>
-			</div>
-		</div>	
-		<div class="pdT15">
-			<p style="display:inline">
-				<input id="uploadFile" class="upload" ng-model="fileName" placeholder="Pick File --->" disabled="disabled" />
-			</p>
-			<button class="fileUpload btn btn-danger">
-				<span >Pick File</span>
-				<input ng-click="file()" ngf-select ng-model="file" id="uploadBtn" type="file" class="upload" />
-			</button>
-			<button class="btn btn-primary clearB" ng-click="upload(file)">Upload!</button>
-		</div>		
+		</div>
+	</nav>
+	<div class="filters" style="margin-top: 60px" layout="row"
+		layout-align="center center">
+		<md-input-container> <label>Enter Search
+			Term</label> <input type="text" ng-model="name"> <md-button
+			class="md-raised md-primary pull-right" style="margin-top:-40px"
+			ng-click="searchResult(name);">ok</md-button> </md-input-container>
 	</div>
-</div>
- <footer class="fixedBottom">
-      	 <div class="container">
-        </div>
-    </footer>
- </article>
+		  <div class="row" ng-show="pluginData"  style="margin-left:600px;margin-top:10px">
+    		<ul ng-repeat="plugin in pluginData">
+    			<li><a ng-click="showUpdate(plugin);">{{plugin.pluginName}}</a></li>
+    		</ul>
+    </div>
+	<div class="container pdT100">
+		<div ng-if="loggedIn == true">
+			<label>ADD</label>
+			<div class="row">
+				<div>
+					NAME <input id="name" ng-model="searchData.pluginName" />
+				</div>
+				<div>
+					Description <textarea id="description" ng-model="searchData.pluginDesc" />
+				</div>
+			</div>
+			<div class="pdT15">
+				<p style="display: inline">
+					<input id="uploadFile" class="upload" ng-model="fileName"
+						placeholder="Pick File --->" disabled="disabled" />
+				</p>
+				<button class="fileUpload btn btn-danger">
+					<span>Pick File</span> <input ngf-select
+						ng-model="file" id="uploadBtn" type="file" class="upload" />
+				</button>
+				<button class="btn btn-primary clearB" ng-click="upload(file)">Upload!</button>
+			</div>
+		</div>
+		<div ng-if="loggedIn != true"> 
+			<label>VIEW</label>
+			<div class="row">
+				<div>
+					NAME <input disabled="disabled" ng-model="pluginName" id="name" />
+				</div>
+				<div>
+					Description <textarea  disabled="disabled" ng-model="pluginDesc"
+						id="description" />
+				</div>
+			</div>
+			<div class="pdT15">
+				<p style="display: inline">
+					<input id="uploadFile" class="upload" ng-model="fileName"
+						placeholder="Pick File --->" disabled="disabled" />
+				</p>
+				<button class="btn btn-success clearB"><a style="color:white;" target="_self" href="services/pluginhub/download/{{id}}" download="{{fileName}}">Download</a></button>
+			</div>
+		</div>
+	</div>
+		<footer class="fixedBottom">
+			<div class="container"></div>
+		</footer>
+</article>

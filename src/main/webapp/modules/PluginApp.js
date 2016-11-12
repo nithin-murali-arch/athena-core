@@ -43,7 +43,7 @@ app.controller("LoginPluginController", ['$scope', 'bnbHttpService', '$location'
                 'Content-Type': 'application/json'
             },
             dataType: 'json',
-            url: 'services/authenticate/login',
+            url: 'services/pluginhub/login',
             data: JSON.stringify($scope.login)
         };
         bnbHttpService.call(loginConfig).then(function(response) {
@@ -61,7 +61,7 @@ app.controller("LoginPluginController", ['$scope', 'bnbHttpService', '$location'
         }
     };
 
-    $scope.routeToView = function(name) {
+    $scope.searchResult = function(name) {
         var routeInfo = {
             method: "get",
             headers: {
@@ -72,18 +72,52 @@ app.controller("LoginPluginController", ['$scope', 'bnbHttpService', '$location'
         };
 
         bnbHttpService.call(routeInfo).then(function(response) {
-            data = response;
+        	$scope.pluginData = response.data;
             });
     };
+    $scope.routeToView = function(plugin) {
+    	sessionStorage.createdBy = plugin.createdBy;
+    	sessionStorage.createdDate = plugin.createdDate;
+    	sessionStorage.fileName = plugin.fileName;
+        sessionStorage.pluginDesc = plugin.pluginDesc;
+        sessionStorage.pluginName = plugin.pluginName;
+        sessionStorage.id = plugin.id;
+        sessionStorage.isLatest = plugin.isLatest;
+        sessionStorage.downloadCount = plugin.downloadCount;
+        sessionStorage.loggedIn = false;
+        sessionStorage.loggedInVIewFlag = true;
+    	$location.path("/view");	
+    };
+    
 }]);
 
 app.controller("JarUploadController", ['$scope', 'Upload', '$timeout', 'bnbHttpService', function($scope, Upload, $timeout, bnbHttpService) {
+	$scope.searchData = {};
     var jarColumns = ['jarName'];
     var appColumns = ['Param Name', 'Param Value'];
-    if (sessionStorage.UserName.length !== 0)
+    $scope.createdBy = sessionStorage.createdBy;
+    $scope.createdDate = sessionStorage.createdDate;
+    $scope.fileName = sessionStorage.fileName;
+    $scope.pluginDesc = sessionStorage.pluginDesc;
+    $scope.pluginName = sessionStorage.pluginName;
+    $scope.id = sessionStorage.id;
+    $scope.isLatest = sessionStorage.isLatest;
+    $scope.downloadCount = sessionStorage.downloadCount;
+    $scope.loggedIn = sessionStorage.loggedIn;
+    $scope.loggedInVIewFlag = sessionStorage.loggedInVIewFlag;
+    $scope.loggedIn = $scope.loggedIn == "true" ? true : false;
+    
+    if($scope.loggedIn == true){
+    	$scope.fileName = "";
+    }
+    if (angular.isDefined(sessionStorage.UserName) && sessionStorage.UserName.length !== 0)
     {
-        $scope.loggedin = true ;
-    }   
+        $scope.loggedIn = true ;
+        $scope.userName = sessionStorage.UserName; 
+    }  
+    if($scope.loggedIn == true && $scope.createdBy == undefined){
+    	$scope.fileName = undefined;
+    }
     bnbHttpService.call({
         'url': 'services/moduleHandler/listAll',
         'method': 'GET'
@@ -128,31 +162,68 @@ app.controller("JarUploadController", ['$scope', 'Upload', '$timeout', 'bnbHttpS
         };
 
     });
-    $scope.upload = function(file) {
-        file.upload = Upload.upload({
-            url: 'UploadJar',
-            data: {
-                file: file
+    
+    $scope.searchResult = function(name) {
+    	$scope.updateFlag = true;
+    	$scope.viewFlag = false;
+        var routeInfo = {
+            method: "get",
+            headers: {
+                'Content-Type': 'application/json'
             },
-        });
-        file.upload.then(function(response) {
-            $timeout(function() {
-                file.result = response.data;
-                if (angular.isDefined(file.result.error)) {
-                    alert(file.result.error);
-                } else {
-                    delete $scope.file;
-                    $scope.fileName = "";
-                    $scope.appParams = file.result.appParams;
-                    $scope.jars = file.result.jars;
-                    prepareApps();
-                    prepareJars();
-                    $scope.jarGrid.data = $scope.jars;
-                    $scope.appGrid.data = $scope.appParams;
-                }
+            dataType: 'json',
+            url: 'services/pluginhub/searchAll/' + name
+        };
 
+        bnbHttpService.call(routeInfo).then(function(response) {
+        	$scope.pluginData = response.data;
             });
+    };
+    
+    $scope.showUpdate = function(plugin) {
+        if(plugin.createdBy == $scope.userName) {
+            $scope.viewFlag = true;
+            $scope.updateFlag = false;
+        }
+    	$scope.searchData = plugin;
+    };
+    
+    $scope.upload = function(file) {
+    	$scope.searchData.createdBy = sessionStorage.UserName;
+    	$scope.searchData.fileName = file.name;
+    	bnbHttpService.call({
+            'url': 'services/pluginhub/add/',
+            'method': 'POST',
+            data: $scope.searchData
+        }).then(function(response) {
+        	if(response.data === 'Success!'){
+                file.upload = Upload.upload({
+                    url: 'pluginHubUpload',
+                    data: {
+                        file: file
+                    },
+                });
+                file.upload.then(function(response) {
+                    $timeout(function() {
+                        file.result = response.data;
+                        if (angular.isDefined(file.result.error)) {
+                            alert(file.result.error);
+                        } else {
+                            delete $scope.file;
+                            $scope.fileName = "";
+                            $scope.appParams = file.result.appParams;
+                            $scope.jars = file.result.jars;
+                            prepareApps();
+                            prepareJars();
+                            $scope.jarGrid.data = $scope.jars;
+                            $scope.appGrid.data = $scope.appParams;
+                        }
+
+                    });
+                });
+        	}
         });
+
     }
     
 
@@ -182,6 +253,7 @@ app.controller("JarUploadController", ['$scope', 'Upload', '$timeout', 'bnbHttpS
     $scope.$watch('file', function(newValue, oldValue) {
         if (newValue !== null && newValue !== undefined) {
             $scope.fileName = "C:\\Fakepath\\" + newValue.name;
+            $scope.searchData.fileName = newValue.name;
         }
     });
 

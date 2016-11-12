@@ -134,7 +134,9 @@ public class UploadJar extends HttpServlet {
 				writer.println(json);
 				return;
 			}
-			folder.mkdir();
+			if(!folder.exists()){
+				folder.mkdir();
+			}
 			jar.renameTo(new File(
 					USER_HOME + pathSep + fileName.substring(0, fileName.lastIndexOf(".")) + pathSep + fileName));
 			addJarContents(USER_HOME + pathSep + fileName.substring(0, fileName.lastIndexOf(".")), fileName);
@@ -204,7 +206,9 @@ public class UploadJar extends HttpServlet {
 
 	private void addJarContents(String pathToJar, String jar) throws Exception {
 		System.out.println("jar xf " + pathToJar);
-		Runtime.getRuntime().exec("jar xf " + jar, null, new File(pathToJar));
+		ThreadRunner runner = new ThreadRunner(pathToJar, jar);
+		runner.start();
+		runner.join();
 		String destDir = USER_HOME + pathToJar.substring(pathToJar.lastIndexOf(pathSep), pathToJar.length());
 		String destFolder = UploadJar.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		copyFolder(new File(destDir), new File(destFolder));
@@ -222,8 +226,10 @@ public class UploadJar extends HttpServlet {
 				File srcFile = new File(src, file);
 				File destFile = new File(dest, file);
 				copyFolder(srcFile, destFile);
+				
 			}
 		} else {
+			System.out.println(src + " copied to " + dest);
 			InputStream in = new FileInputStream(src);
 			OutputStream out = new FileOutputStream(dest);
 			byte[] buffer = new byte[1024];
@@ -234,6 +240,24 @@ public class UploadJar extends HttpServlet {
 			in.close();
 			out.close();
 			// System.out.println("File copied from " + src + " to " + dest);
+		}
+	}
+}
+
+class ThreadRunner extends Thread{
+	String initPath;
+	String jarName;
+	
+	ThreadRunner(String initPath, String jarName){
+		this.initPath = initPath;
+		this.jarName = jarName;
+	}
+	
+	public void run(){
+		try {
+			Runtime.getRuntime().exec("jar xf " + jarName, null, new File(initPath));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }
