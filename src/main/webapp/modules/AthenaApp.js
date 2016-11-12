@@ -1,5 +1,5 @@
 "use strict";
-var app = angular.module('AthenaApp', ['ngMaterial', 'ui.bootstrap', 'ngRoute', 'ngFileUpload']);
+var app = angular.module('AthenaApp', ['ngRoute']);
 
 app.config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/login', {
@@ -163,9 +163,6 @@ app.controller("JarUpload", ['$scope', 'Upload', '$timeout', 'bnbHttpService', f
         });
     }
     
-
-
-
     function prepareApps() {
         var objA = [];
         angular.forEach($scope.appParams, function(value, key) {

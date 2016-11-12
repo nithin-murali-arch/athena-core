@@ -12,15 +12,6 @@ app.config(['$routeProvider', function($routeProvider) {
         redirectTo: '/loginplugin'
     });
 }]);
-app.directive('bnbGrid', function() {
-    return {
-        restrict: 'E',
-        scope: {
-            grid: '=grid'
-        },
-        templateUrl: 'modules/templates/grid.html'
-    }
-});
 
 app.service('bnbHttpService', ['$http', '$q', function($http, $q) {
     this.call = function(config) {
@@ -118,52 +109,7 @@ app.controller("JarUploadController", ['$scope', 'Upload', '$timeout', 'bnbHttpS
     if($scope.loggedIn == true && $scope.createdBy == undefined){
     	$scope.fileName = undefined;
     }
-    bnbHttpService.call({
-        'url': 'services/moduleHandler/listAll',
-        'method': 'GET'
-    }).then(function(response) {
-        console.log(response);
-        $scope.jars = JSON.parse(response.data);
-        prepareJars();
-        console.log($scope.appParams);
-        $scope.jarGrid = {
-                headers: jarColumns,
-                data: $scope.jars
-            };
-
-
-    });
-    bnbHttpService.call({
-        'url': 'services/moduleHandler/listApps',
-        'method': 'GET'
-    }).then(function(response) {
-        console.log(response);
-        $scope.appParams = JSON.parse(response.data);
-        prepareApps();
-        console.log($scope.appParams);
-        $scope.appGrid = {
-                headers: appColumns,
-                data: $scope.appParams,
-                formBelow: true
-            };
-        $scope.appGrid.fire = function(key, value){
-            bnbHttpService.call({
-                'url': 'services/moduleHandler/addParam/' + key + '/' + value,
-                'method': 'GET'
-            }).then(function(response) {
-                console.log(response);
-                $scope.appParams = JSON.parse(response.data);
-                prepareApps();
-                console.log($scope.appParams);
-                $scope.appGrid.data = $scope.appParams;
-                key = undefined;
-                value = undefined;
-            });
-        };
-
-    });
-    
-    $scope.searchResult = function(name) {
+       $scope.searchResult = function(name) {
     	$scope.updateFlag = true;
     	$scope.viewFlag = false;
         var routeInfo = {
@@ -226,30 +172,6 @@ app.controller("JarUploadController", ['$scope', 'Upload', '$timeout', 'bnbHttpS
 
     }
     
-
-
-
-    function prepareApps() {
-        var objA = [];
-        angular.forEach($scope.appParams, function(value, key) {
-            var obj = {};
-            obj.key = value.KEYTEXT;
-            obj.value = value.VALUETEXT;
-            objA.push(obj);
-        });
-        $scope.appParams = objA;
-    }
-
-    function prepareJars() {
-        var objA = [];
-        angular.forEach($scope.jars, function(value, key) {
-            var obj = {};
-            obj.key = value.jarName;
-            objA.push(obj);
-        });
-        $scope.jars = objA;
-    }
-
     $scope.$watch('file', function(newValue, oldValue) {
         if (newValue !== null && newValue !== undefined) {
             $scope.fileName = "C:\\Fakepath\\" + newValue.name;
